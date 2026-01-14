@@ -15,8 +15,8 @@ const App = () => {
       <div className="flex-1">
         <Navbar />
 
-        <div className="bg-gray-100 h-screen pt-18 pl-18">
-          <div className="bg-gray-100 h-[calc(100vh-88px)] overflow-y-auto">
+        <div className="bg-[#f2f1f9] h-screen pt-18 pl-18">
+          <div className="bg-[#f2f1f9] h-[calc(100vh-88px)] overflow-y-auto">
             <Routes>
               <Route path="/" element={<Home />} />
 

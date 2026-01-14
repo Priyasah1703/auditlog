@@ -62,7 +62,7 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="fixed top-[12px] left-18 right-4 z-50">
+    <div className="fixed top-[12px] left-18 right-4 z-50 font-semibold">
       <div className="flex items-center justify-between bg-white px-6 py-2 rounded-full shadow-md">
 
         <div className="flex items-center text-sm">
@@ -83,7 +83,7 @@ const Navbar = () => {
               <div
                 onClick={() => setOpen(!open)}
                 className="flex items-center gap-1 cursor-pointer text-[13px]
-                  bg-white px-3 py-1 rounded-full border border-gray-400"
+                  bg-white px-3 py-1 rounded-full border border-gray-300"
               >
                 <Calendar size={16} />
                 <span>{selected}</span>

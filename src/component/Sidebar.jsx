@@ -70,7 +70,7 @@ const Sidebar = () => {
   }, []);
 
   return (
-    <div className="fixed left-[10px] top-[12px] bottom-[12px] z-50">
+    <div className="fixed left-[10px] top-[12px] bottom-[12px] z-50 font-semibold">
       <div className="bg-white w-[3.625rem] h-full rounded-full p-3 flex flex-col gap-3">
         <img src={logo} alt="Logo" className="w-8 h-8 mb-6" />
 

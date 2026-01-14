@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -8,6 +8,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import api from "../axiosInstance";
 
 // Register chart modules
 ChartJS.register(
@@ -25,8 +26,63 @@ const LedgerTransactionsChart = () => {
     "20:00", "21:00",
   ];
 
-  const depositData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  const deductionData = [0, 0, 118, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const [depositData, setDepositData] = useState(
+    Array(labels.length).fill(0)
+  );
+  const [deductionData, setDeductionData] = useState(
+    Array(labels.length).fill(0)
+  );
+
+  const formatAmount = (value) => {
+    if (value >= 1_000_000) return `${value / 1_000_000}M`;
+    if (value >= 1_000) return `${value / 1_000}K`;
+    return value;
+  };
+
+  useEffect(() => {
+    const fetchBarChartData = async () => {
+      try {
+        const res = await api.get(
+          "https://api.allorigins.win/raw?url=" +
+            encodeURIComponent(
+              "https://formatjsononline.com/api/json/cb-reports-bar-chart"
+            )
+        );
+
+        const response = res.data;
+
+        const depositArr = Array(labels.length).fill(0);
+        const deductionArr = Array(labels.length).fill(0);
+
+        response.forEach((item) => {
+          if (item.tag === "deposit") {
+            item.data.forEach((d) => {
+              const index = labels.indexOf(d.hour);
+              if (index !== -1) {
+                depositArr[index] = Number(d.amount);
+              }
+            });
+          }
+
+          if (item.tag === "deduction") {
+            item.data.forEach((d) => {
+              const index = labels.indexOf(d.hour);
+              if (index !== -1) {
+                deductionArr[index] = Number(d.amount);
+              }
+            });
+          }
+        });
+
+        setDepositData(depositArr);
+        setDeductionData(deductionArr);
+      } catch (error) {
+        console.error("Bar chart API error", error);
+      }
+    };
+
+    fetchBarChartData();
+  }, []);
 
   const data = {
     labels,
@@ -34,14 +90,14 @@ const LedgerTransactionsChart = () => {
       {
         label: "Deposit",
         data: depositData,
-        backgroundColor: "#4ade80",
+        backgroundColor: "#6FB070",
         borderRadius: 6,
         barThickness: 30,
       },
       {
         label: "Deduction",
         data: deductionData,
-        backgroundColor: "#ef4444",
+        backgroundColor: "#E0645C",
         borderRadius: 6,
         barThickness: 30,
       },
@@ -60,25 +116,21 @@ const LedgerTransactionsChart = () => {
         position: "bottom",
         labels: {
           usePointStyle: true,
-          pointStyle: "rect",
-          boxWidth: 10,
-          font: { size: 12 },
+          pointStyle: "circle",
+          padding: 20,
+          font: {
+            size: 9,
+          },
         },
       },
-
-      // Tooltip
       tooltip: {
         backgroundColor: "#2f2f2f",
         padding: 12,
         cornerRadius: 8,
-        displayColors: true,
         callbacks: {
-          title: (tooltipItems) => {
-            return tooltipItems[0].label; // e.g. 15:00
-          },
           label: (context) => {
             const value = context.raw ?? 0;
-            return `${context.dataset.label}: ₹${value}`;
+            return `${context.dataset.label}: ₹${formatAmount(value)}`;
           },
         },
       },
@@ -86,12 +138,11 @@ const LedgerTransactionsChart = () => {
     scales: {
       y: {
         beginAtZero: true,
-        max: 140,
-        ticks: {
-          stepSize: 20,
-        },
         grid: {
           color: "#f1f5f9",
+        },
+        ticks: {
+          callback: (value) => formatAmount(value),
         },
       },
       x: {
