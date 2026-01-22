@@ -5,7 +5,7 @@ import Sidebar from "./component/Sidebar";
 import Home from "./component/Home";
 import Auditlog from "./component/Auditlog";
 import ActivityLogs from "./component/ActivityLogs";
-import Reports from "./component/reports";
+import Reports from "./component/Reports";  // ← Changed from "./component/reports"
 
 const App = () => {
   return (
